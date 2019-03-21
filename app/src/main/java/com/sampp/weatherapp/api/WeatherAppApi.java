@@ -5,6 +5,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class WeatherAppApi {
     public static final String BASE_URL = "http://api.openweathermap.org/data/2.5/";
+    public static final String KEY = "19bb222583cf6d14426b31687c4256ad";
     private static Retrofit retrofit = null;
 
     // singleton design pattern to get the retrofit instance

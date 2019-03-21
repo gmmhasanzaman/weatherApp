@@ -13,6 +13,6 @@ public interface WeatherService {
      */
     // http://api.openweathermap.org/data/2.5/weather?q=Seville,es&appid=19bb222583cf6d14426b31687c4256ad
 
-    @GET("users/{user}/repos")
-    Call<City> getCityByName(@Query("q") String city, @Query("appid") String key );
+    @GET("weather")
+    Call<City> getCityByName(@Query("q") String city, @Query("appid") String key, @Query("units") String value);
 }
