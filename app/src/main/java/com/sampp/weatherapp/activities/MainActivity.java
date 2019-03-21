@@ -3,6 +3,7 @@ package com.sampp.weatherapp.activities;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.sampp.weatherapp.R;
@@ -18,6 +19,7 @@ import retrofit2.Response;
 public class MainActivity extends AppCompatActivity {
 
     ImageView weatherImg;
+    TextView weatherTemperatureTxt;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -25,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
         initializeVisuals();
         WeatherService service = WeatherAppApi.getApi().create(WeatherService.class);
 
-        Call<City> cityCall = service.getCityByName("Seville,ES", WeatherAppApi.KEY,"metrics");
+        Call<City> cityCall = service.getCityByName("Seville,ES", WeatherAppApi.KEY,"Metric");
 
         cityCall.enqueue(new Callback<City>() {
             @Override
@@ -41,11 +43,12 @@ public class MainActivity extends AppCompatActivity {
     }
     public void initializeVisuals(){
         weatherImg = findViewById(R.id.weather_img);
-
+        weatherTemperatureTxt = findViewById(R.id.weather_temperature);
     }
 
     // update the UI with the result.
     public void setResult(City city){
+        weatherTemperatureTxt.setText(String.valueOf(city.getTemperature()));
         Picasso.get().load(WeatherAppApi.BASE_ICONS_URL + city.getIcon() + WeatherAppApi.ICON_EXTENSION).into(weatherImg);
     }
 }
