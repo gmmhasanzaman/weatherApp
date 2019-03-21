@@ -5,17 +5,19 @@ public class City {
     private String name;
     private double lat;
     private double lon;
+    private String icon;
 
     public City(int id, String name) {
         this.id = id;
         this.name = name;
     }
 
-    public City(int id, String name, double lat, double lon) {
+    public City(int id, String name, double lat, double lon, String icon) {
         this.id = id;
         this.name = name;
         this.lat = lat;
         this.lon = lon;
+        this.icon = icon;
     }
 
     public int getId() {
@@ -48,5 +50,13 @@ public class City {
 
     public void setLon(double lon) {
         this.lon = lon;
+    }
+
+    public String getIcon() {
+        return icon;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
     }
 }
