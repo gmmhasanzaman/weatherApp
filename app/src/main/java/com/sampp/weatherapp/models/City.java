@@ -11,7 +11,12 @@ public class City {
         this.name = name;
     }
 
-
+    public City(int id, String name, double lat, double lon) {
+        this.id = id;
+        this.name = name;
+        this.lat = lat;
+        this.lon = lon;
+    }
 
     public int getId() {
         return id;
