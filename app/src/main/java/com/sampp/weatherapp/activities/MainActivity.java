@@ -1,7 +1,9 @@
-package com.sampp.weatherapp;
+package com.sampp.weatherapp.activities;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+
+import com.sampp.weatherapp.R;
 
 public class MainActivity extends AppCompatActivity {
 
