@@ -23,16 +23,42 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String METRIC_UNIT = "Metric";
     ImageView weatherImg;
-    TextView weatherTemperatureTxt,weatherDescriptionTxt,weatherCityTxt;
+    TextView weatherTemperatureTxt,weatherMinTemperatureTxt,weatherMaxTemperatureTxt,weatherDescriptionTxt,weatherCityTxt;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setupDayNightMode();
         initializeVisuals();
+        getCityFromService("Seville,ES");
+    }
+    public void initializeVisuals(){
+        weatherImg = findViewById(R.id.weather_img);
+        weatherTemperatureTxt = findViewById(R.id.weather_temperature);
+        weatherDescriptionTxt = findViewById(R.id.weather_description);
+        weatherCityTxt = findViewById(R.id.weather_city);
+        weatherMinTemperatureTxt = findViewById(R.id.weather_min_temp);
+        weatherMaxTemperatureTxt = findViewById(R.id.weather_max_temp);
+    }
+
+    public void setupDayNightMode(){
+        getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_AUTO);
+    }
+
+    // update the UI with the result.
+    public void setResult(City city){
+        weatherCityTxt.setText(city.getName());
+        weatherTemperatureTxt.setText(String.valueOf(city.getTemperature()));
+        weatherMinTemperatureTxt.setText(String.valueOf(city.getMinTemperature()));
+        weatherMaxTemperatureTxt.setText(String.valueOf(city.getMaxTemperature()));
+        weatherDescriptionTxt.setText(city.getDescription());
+        Picasso.get().load(WeatherAppApi.BASE_ICONS_URL + city.getIcon() + WeatherAppApi.ICON_EXTENSION).into(weatherImg);
+    }
+
+    public void getCityFromService(String city){
         WeatherService service = WeatherAppApi.getApi().create(WeatherService.class);
 
-        Call<City> cityCall = service.getCityByName("Seville,ES", WeatherAppApi.KEY,METRIC_UNIT, Locale.getDefault().getLanguage());
+        Call<City> cityCall = service.getCityByName(city, WeatherAppApi.KEY,METRIC_UNIT, Locale.getDefault().getLanguage());
 
         cityCall.enqueue(new Callback<City>() {
             @Override
@@ -45,23 +71,5 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this,"failed", Toast.LENGTH_LONG).show();
             }
         });
-    }
-    public void initializeVisuals(){
-        weatherImg = findViewById(R.id.weather_img);
-        weatherTemperatureTxt = findViewById(R.id.weather_temperature);
-        weatherDescriptionTxt = findViewById(R.id.weather_description);
-        weatherCityTxt = findViewById(R.id.weather_city);
-    }
-
-    public void setupDayNightMode(){
-        getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_AUTO);
-    }
-
-    // update the UI with the result.
-    public void setResult(City city){
-        weatherCityTxt.setText(city.getName());
-        weatherTemperatureTxt.setText(String.valueOf(city.getTemperature()));
-        weatherDescriptionTxt.setText(city.getDescription());
-        Picasso.get().load(WeatherAppApi.BASE_ICONS_URL + city.getIcon() + WeatherAppApi.ICON_EXTENSION).into(weatherImg);
     }
 }

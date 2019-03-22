@@ -8,13 +8,15 @@ public class City {
     private String icon;
     private int temperature;
     private String description;
+    private int minTemperature;
+    private int maxTemperature;
 
     public City(int id, String name) {
         this.id = id;
         this.name = name;
     }
 
-    public City(int id, String name, double lat, double lon, String icon, int temperature, String description) {
+    public City(int id, String name, double lat, double lon, String icon, int temperature,int minTemperature,int maxTemperature, String description) {
         this.id = id;
         this.name = name;
         this.lat = lat;
@@ -22,6 +24,8 @@ public class City {
         this.icon = icon;
         this.temperature = temperature;
         this.description = description;
+        this.minTemperature = minTemperature;
+        this.maxTemperature = maxTemperature;
     }
 
     public int getId() {
@@ -78,5 +82,21 @@ public class City {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public int getMinTemperature() {
+        return minTemperature;
+    }
+
+    public void setMinTemperature(int minTemperature) {
+        this.minTemperature = minTemperature;
+    }
+
+    public int getMaxTemperature() {
+        return maxTemperature;
+    }
+
+    public void setMaxTemperature(int maxTemperature) {
+        this.maxTemperature = maxTemperature;
     }
 }

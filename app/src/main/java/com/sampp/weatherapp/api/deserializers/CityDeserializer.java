@@ -23,9 +23,11 @@ public class CityDeserializer implements JsonDeserializer<City> {
         double lon = json.getAsJsonObject().get("coord").getAsJsonObject().get("lon").getAsDouble();
 
         int temperature = json.getAsJsonObject().get("main").getAsJsonObject().get("temp").getAsInt();
+        int mintTemperature = json.getAsJsonObject().get("main").getAsJsonObject().get("temp_min").getAsInt();
+        int maxTemperature = json.getAsJsonObject().get("main").getAsJsonObject().get("temp_max").getAsInt();
         String icon = json.getAsJsonObject().get("weather").getAsJsonArray().get(0).getAsJsonObject().get("icon").getAsString();
         String description = json.getAsJsonObject().get("weather").getAsJsonArray().get(0).getAsJsonObject().get("description").getAsString();
 
-        return new City(id,name,lat,lon,icon,temperature,description);
+        return new City(id,name,lat,lon,icon,temperature,mintTemperature,maxTemperature,description);
     }
 }
