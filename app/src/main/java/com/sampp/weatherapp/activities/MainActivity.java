@@ -23,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String METRIC_UNIT = "Metric";
     ImageView weatherImg;
-    TextView weatherTemperatureTxt,weatherMinTemperatureTxt,weatherMaxTemperatureTxt,weatherDescriptionTxt,weatherCityTxt;
+    TextView weatherTemperatureTxt,weatherMinTemperatureTxt,weatherMaxTemperatureTxt,weatherDescriptionTxt,weatherCityTxt,weatherHumidity;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
         weatherCityTxt = findViewById(R.id.weather_city);
         weatherMinTemperatureTxt = findViewById(R.id.weather_min_temp);
         weatherMaxTemperatureTxt = findViewById(R.id.weather_max_temp);
+        weatherHumidity = findViewById(R.id.weather_humidity);
     }
 
     public void setupDayNightMode(){
@@ -51,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
         weatherTemperatureTxt.setText(String.valueOf(city.getTemperature()));
         weatherMinTemperatureTxt.setText(String.valueOf(city.getMinTemperature()));
         weatherMaxTemperatureTxt.setText(String.valueOf(city.getMaxTemperature()));
+        weatherHumidity.setText(String.valueOf(city.getHumidity())+"%");
         weatherDescriptionTxt.setText(city.getDescription());
         Picasso.get().load(WeatherAppApi.BASE_ICONS_URL + city.getIcon() + WeatherAppApi.ICON_EXTENSION).into(weatherImg);
     }
