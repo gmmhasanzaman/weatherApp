@@ -7,19 +7,21 @@ public class City {
     private double lon;
     private String icon;
     private int temperature;
+    private String description;
 
     public City(int id, String name) {
         this.id = id;
         this.name = name;
     }
 
-    public City(int id, String name, double lat, double lon, String icon, int temperature) {
+    public City(int id, String name, double lat, double lon, String icon, int temperature, String description) {
         this.id = id;
         this.name = name;
         this.lat = lat;
         this.lon = lon;
         this.icon = icon;
         this.temperature = temperature;
+        this.description = description;
     }
 
     public int getId() {
@@ -68,5 +70,13 @@ public class City {
 
     public void setTemperature(int temperature) {
         this.temperature = temperature;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

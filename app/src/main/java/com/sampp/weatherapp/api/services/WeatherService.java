@@ -15,4 +15,7 @@ public interface WeatherService {
 
     @GET("weather")
     Call<City> getCityByName(@Query("q") String city, @Query("appid") String key, @Query("units") String value);
+
+    @GET("weather")
+    Call<City> getCityByName(@Query("q") String city, @Query("appid") String key, @Query("units") String value,@Query("lang") String language);
 }

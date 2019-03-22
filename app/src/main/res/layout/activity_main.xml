@@ -10,23 +10,47 @@
         android:id="@+id/weather_img"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
+        android:scaleType="fitXY"
         android:src="@mipmap/ic_launcher"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/weather_temperature" />
 
     <TextView
         android:id="@+id/weather_temperature"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginTop="48dp"
         android:text="35"
         android:textSize="72sp"
-        app:layout_constraintBottom_toBottomOf="@+id/weather_img"
-        app:layout_constraintEnd_toStartOf="@+id/weather_img"
-        app:layout_constraintTop_toTopOf="@+id/weather_img" />
+        app:layout_constraintEnd_toEndOf="@+id/weather_img"
+        app:layout_constraintStart_toStartOf="@+id/weather_img"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/weather_description"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="DESCRIPTION"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="@+id/weather_img"
+        app:layout_constraintStart_toStartOf="@+id/weather_img"
+        app:layout_constraintTop_toBottomOf="@+id/weather_img" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="°c"
+        android:textSize="36sp"
+        app:layout_constraintBottom_toBottomOf="@+id/weather_temperature"
+        app:layout_constraintStart_toEndOf="@+id/weather_temperature"
+        app:layout_constraintTop_toTopOf="@+id/weather_temperature"
+        app:layout_constraintVertical_bias="0.0" />
 </android.support.constraint.ConstraintLayout>

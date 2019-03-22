@@ -24,6 +24,8 @@ public class CityDeserializer implements JsonDeserializer<City> {
 
         int temperature = json.getAsJsonObject().get("main").getAsJsonObject().get("temp").getAsInt();
         String icon = json.getAsJsonObject().get("weather").getAsJsonArray().get(0).getAsJsonObject().get("icon").getAsString();
-        return new City(id,name,lat,lon,icon,temperature);
+        String description = json.getAsJsonObject().get("weather").getAsJsonArray().get(0).getAsJsonObject().get("description").getAsString();
+
+        return new City(id,name,lat,lon,icon,temperature,description);
     }
 }

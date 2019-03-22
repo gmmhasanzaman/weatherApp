@@ -18,8 +18,9 @@ import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final String METRIC_UNIT = "Metric";
     ImageView weatherImg;
-    TextView weatherTemperatureTxt;
+    TextView weatherTemperatureTxt,weatherDescriptionTxt;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
         initializeVisuals();
         WeatherService service = WeatherAppApi.getApi().create(WeatherService.class);
 
-        Call<City> cityCall = service.getCityByName("Seville,ES", WeatherAppApi.KEY,"Metric");
+        Call<City> cityCall = service.getCityByName("Seville,ES", WeatherAppApi.KEY,METRIC_UNIT,"es");
 
         cityCall.enqueue(new Callback<City>() {
             @Override
@@ -44,11 +45,13 @@ public class MainActivity extends AppCompatActivity {
     public void initializeVisuals(){
         weatherImg = findViewById(R.id.weather_img);
         weatherTemperatureTxt = findViewById(R.id.weather_temperature);
+        weatherDescriptionTxt = findViewById(R.id.weather_description);
     }
 
     // update the UI with the result.
     public void setResult(City city){
         weatherTemperatureTxt.setText(String.valueOf(city.getTemperature()));
+        weatherDescriptionTxt.setText(city.getDescription());
         Picasso.get().load(WeatherAppApi.BASE_ICONS_URL + city.getIcon() + WeatherAppApi.ICON_EXTENSION).into(weatherImg);
     }
 }
