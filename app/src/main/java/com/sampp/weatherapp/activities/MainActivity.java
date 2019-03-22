@@ -1,5 +1,7 @@
 package com.sampp.weatherapp.activities;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.AppCompatDelegate;
@@ -7,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
 import com.sampp.weatherapp.R;
 import com.sampp.weatherapp.api.WeatherAppApi;
 import com.sampp.weatherapp.api.services.WeatherService;
@@ -24,13 +27,17 @@ public class MainActivity extends AppCompatActivity {
     private static final String METRIC_UNIT = "Metric";
     ImageView weatherImg;
     TextView weatherTemperatureTxt,weatherMinTemperatureTxt,weatherMaxTemperatureTxt,weatherDescriptionTxt,weatherCityTxt,weatherHumidity;
+    SharedPreferences sharedPref;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setupDayNightMode();
         initializeVisuals();
-        getCityFromService("Seville,ES");
+        getCityFromService("Santo Domingo,DOM");
+
+        sharedPref = getPreferences(Context.MODE_PRIVATE);
+
     }
     public void initializeVisuals(){
         weatherImg = findViewById(R.id.weather_img);
@@ -48,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
 
     // update the UI with the result.
     public void setResult(City city){
+        saveResult(city);
         weatherCityTxt.setText(city.getName());
         weatherTemperatureTxt.setText(String.valueOf(city.getTemperature()));
         weatherMinTemperatureTxt.setText(String.valueOf(city.getMinTemperature()));
@@ -55,6 +63,22 @@ public class MainActivity extends AppCompatActivity {
         weatherHumidity.setText(String.valueOf(city.getHumidity())+"%");
         weatherDescriptionTxt.setText(city.getDescription());
         Picasso.get().load(WeatherAppApi.BASE_ICONS_URL + city.getIcon() + WeatherAppApi.ICON_EXTENSION).into(weatherImg);
+    }
+
+    // saves the result into a Gson object.
+    public void saveResult(City city){
+        SharedPreferences.Editor editor = sharedPref.edit();
+        Gson gson = new Gson();
+        String savedCity = gson.toJson(city);
+        editor.putString("city",savedCity);
+        editor.apply();
+    }
+
+    // returns the last saved city.
+    public City getLastSavedResult(){
+        Gson gson = new Gson();
+        String json = sharedPref.getString("city", null);
+        return gson.fromJson(json, City.class);
     }
 
     public void getCityFromService(String city){
@@ -70,7 +94,9 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<City> call, Throwable t) {
-                Toast.makeText(MainActivity.this,"failed", Toast.LENGTH_LONG).show();
+                Toast.makeText(MainActivity.this,"failed", Toast.LENGTH_SHORT).show();
+                // if fails set the result with the last saved.
+                setResult(getLastSavedResult());
             }
         });
     }
