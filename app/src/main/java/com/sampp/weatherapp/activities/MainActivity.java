@@ -50,16 +50,9 @@ public class MainActivity extends AppCompatActivity {
 
         // get the location client.
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-        // check app location permission
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
-            // permission not granted. Call the Request Permission callback to manage the permissions.
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION);
-        }
-        else{
-            // permission granted.
-            getDeviceLocation();
-        }
+        // permission checker.
+        requestPermission();
         // initialize the SharedPreferences instance.
         sharedPref = getPreferences(Context.MODE_PRIVATE);
     }
@@ -126,6 +119,23 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    public void requestPermission(){
+        if (!isPermissionEnabled()) {
+
+            // permission not granted. Call the Request Permission callback to manage the permissions.
+            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION);
+        }
+        else{
+            // permission granted.
+            getWeather();
+        }
+    }
+
+    public boolean isPermissionEnabled(){
+        // check app location permission
+        return (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED);
+    }
+
     @SuppressLint("MissingPermission")
     public void getDeviceLocation(){
         fusedLocationClient.getLastLocation()
@@ -151,6 +161,10 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
+    public void getWeather(){
+        getDeviceLocation();
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
         switch (requestCode) {
@@ -159,7 +173,7 @@ public class MainActivity extends AppCompatActivity {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
                     // permission was granted, yay! Do the location-related task you need to do.
-                    getDeviceLocation();
+                    getWeather();
 
                 } else {
 
@@ -171,6 +185,18 @@ public class MainActivity extends AppCompatActivity {
 
             // other 'case' lines to check for other
             // permissions this app might request
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(isPermissionEnabled()){
+            getWeather();
+        }else if(!isPermissionEnabled() && getLastSavedResult() !=null){
+            setResult(getLastSavedResult());
+        }else if(getLastSavedResult() == null){
+            setResult(City.getDefaultCity());
         }
     }
 }
