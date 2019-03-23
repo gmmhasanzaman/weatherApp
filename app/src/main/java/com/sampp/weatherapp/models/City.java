@@ -109,4 +109,8 @@ public class City {
     public void setHumidity(int humidity) {
         this.humidity = humidity;
     }
+
+    public static City getDefaultCity(){
+        return new City(0, "London", 0, 0, "", 20,19,22,99, "Please enable Location and Internet");
+    }
 }
