@@ -1,6 +1,7 @@
 package com.sampp.weatherapp.activities;
 
 import android.Manifest;
+import android.animation.LayoutTransition;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -11,6 +12,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.AppCompatDelegate;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -57,6 +59,8 @@ public class MainActivity extends AppCompatActivity {
         sharedPref = getPreferences(Context.MODE_PRIVATE);
     }
     public void initializeVisuals(){
+        // this is to animate the UI if it changes. 
+        ((ViewGroup) findViewById(R.id.container)).getLayoutTransition().enableTransitionType(LayoutTransition.CHANGING);
         weatherImg = findViewById(R.id.weather_img);
         weatherTemperatureTxt = findViewById(R.id.weather_temperature);
         weatherDescriptionTxt = findViewById(R.id.weather_description);
