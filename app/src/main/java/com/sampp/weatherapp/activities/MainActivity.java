@@ -1,14 +1,24 @@
 package com.sampp.weatherapp.activities;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.AppCompatDelegate;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.gson.Gson;
 import com.sampp.weatherapp.R;
 import com.sampp.weatherapp.api.WeatherAppApi;
@@ -25,19 +35,33 @@ import retrofit2.Response;
 public class MainActivity extends AppCompatActivity {
 
     private static final String METRIC_UNIT = "Metric";
+    private static final int LOCATION_PERMISSION = 1150;
     ImageView weatherImg;
-    TextView weatherTemperatureTxt,weatherMinTemperatureTxt,weatherMaxTemperatureTxt,weatherDescriptionTxt,weatherCityTxt,weatherHumidity;
+    TextView weatherTemperatureTxt, weatherMinTemperatureTxt, weatherMaxTemperatureTxt, weatherDescriptionTxt, weatherCityTxt, weatherHumidity;
     SharedPreferences sharedPref;
+    private FusedLocationProviderClient fusedLocationClient;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setupDayNightMode();
         initializeVisuals();
-        getCityFromService("Santo Domingo,DOM");
 
+        // get the location client.
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        // check app location permission
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            // permission not granted. Call the Request Permission callback to manage the permissions.
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION);
+        }
+        else{
+            // permission granted.
+            getDeviceLocation();
+        }
+        // initialize the SharedPreferences instance.
         sharedPref = getPreferences(Context.MODE_PRIVATE);
-
     }
     public void initializeVisuals(){
         weatherImg = findViewById(R.id.weather_img);
@@ -81,10 +105,11 @@ public class MainActivity extends AppCompatActivity {
         return gson.fromJson(json, City.class);
     }
 
-    public void getCityFromService(String city){
+    public void getCityFromService(String latitude,String longitude){
         WeatherService service = WeatherAppApi.getApi().create(WeatherService.class);
 
-        Call<City> cityCall = service.getCityByName(city, WeatherAppApi.KEY,METRIC_UNIT, Locale.getDefault().getLanguage());
+        // get the city object with coordinates
+        Call<City> cityCall = service.getCityByCoordinates(latitude,longitude, WeatherAppApi.KEY,METRIC_UNIT, Locale.getDefault().getLanguage());
 
         cityCall.enqueue(new Callback<City>() {
             @Override
@@ -99,5 +124,53 @@ public class MainActivity extends AppCompatActivity {
                 setResult(getLastSavedResult());
             }
         });
+    }
+
+    @SuppressLint("MissingPermission")
+    public void getDeviceLocation(){
+        fusedLocationClient.getLastLocation()
+                .addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                    @Override
+                    public void onSuccess(Location location) {
+                        // Got last known location. In some rare situations this can be null.
+                        if (location != null) {
+                              // Logic to handle location object
+//                            Geocoder geocoder = new Geocoder(MainActivity.this, Locale.getDefault());
+//                            List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+//                            String ciyName = addresses.get(0).getLocality();
+//                            String countryCode = Locale.getDefault().getISO3Country();
+                            getCityFromService(String.valueOf(location.getLatitude()),String.valueOf(location.getLongitude()));
+                        }
+                    }
+                })
+                .addOnFailureListener(this, new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(MainActivity.this,"Failed", Toast.LENGTH_LONG).show();
+                    }
+                });
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case LOCATION_PERMISSION: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    // permission was granted, yay! Do the location-related task you need to do.
+                    getDeviceLocation();
+
+                } else {
+
+                    // permission denied, boo! Disable the functionality that depends on this permission.
+                    setResult(City.getDefaultCity());
+                }
+                return;
+            }
+
+            // other 'case' lines to check for other
+            // permissions this app might request
+        }
     }
 }
