@@ -6,6 +6,8 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -28,6 +30,8 @@ import com.sampp.weatherapp.api.services.WeatherService;
 import com.sampp.weatherapp.models.City;
 import com.squareup.picasso.Picasso;
 
+import java.io.IOException;
+import java.util.List;
 import java.util.Locale;
 
 import retrofit2.Call;
@@ -59,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
         sharedPref = getPreferences(Context.MODE_PRIVATE);
     }
     public void initializeVisuals(){
-        // this is to animate the UI if it changes. 
+        // this is to animate the UI if it changes.
         ((ViewGroup) findViewById(R.id.container)).getLayoutTransition().enableTransitionType(LayoutTransition.CHANGING);
         weatherImg = findViewById(R.id.weather_img);
         weatherTemperatureTxt = findViewById(R.id.weather_temperature);
@@ -102,11 +106,11 @@ public class MainActivity extends AppCompatActivity {
         return gson.fromJson(json, City.class);
     }
 
-    public void getCityFromService(String latitude,String longitude){
+    public void getCityFromService(String cityName){
         WeatherService service = WeatherAppApi.getApi().create(WeatherService.class);
 
         // get the city object with coordinates
-        Call<City> cityCall = service.getCityByCoordinates(latitude,longitude, WeatherAppApi.KEY,METRIC_UNIT, Locale.getDefault().getLanguage());
+        Call<City> cityCall = service.getCityByName(cityName, WeatherAppApi.KEY,METRIC_UNIT, Locale.getDefault().getLanguage());
 
         cityCall.enqueue(new Callback<City>() {
             @Override
@@ -148,12 +152,16 @@ public class MainActivity extends AppCompatActivity {
                     public void onSuccess(Location location) {
                         // Got last known location. In some rare situations this can be null.
                         if (location != null) {
+                            try {
                               // Logic to handle location object
-//                            Geocoder geocoder = new Geocoder(MainActivity.this, Locale.getDefault());
-//                            List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
-//                            String ciyName = addresses.get(0).getLocality();
-//                            String countryCode = Locale.getDefault().getISO3Country();
-                            getCityFromService(String.valueOf(location.getLatitude()),String.valueOf(location.getLongitude()));
+                            Geocoder geocoder = new Geocoder(MainActivity.this, Locale.getDefault());
+                            List<Address> addresses= geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+                            String ciyName = addresses.get(0).getLocality();
+                            String countryCode = Locale.getDefault().getISO3Country();
+                            getCityFromService(ciyName+","+countryCode);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
                         }
                     }
                 })
