@@ -109,8 +109,29 @@ public class MainActivity extends AppCompatActivity {
     public void getCityFromService(String cityName){
         WeatherService service = WeatherAppApi.getApi().create(WeatherService.class);
 
-        // get the city object with coordinates
+        // get the city object with the name of the city
         Call<City> cityCall = service.getCityByName(cityName, WeatherAppApi.KEY,METRIC_UNIT, Locale.getDefault().getLanguage());
+
+        cityCall.enqueue(new Callback<City>() {
+            @Override
+            public void onResponse(Call<City> call, Response<City> response) {
+                setResult(response.body());
+            }
+
+            @Override
+            public void onFailure(Call<City> call, Throwable t) {
+                Toast.makeText(MainActivity.this,"failed", Toast.LENGTH_SHORT).show();
+                // if fails set the result with the last saved.
+                setResult(getLastSavedResult());
+            }
+        });
+    }
+
+    public void getCityFromService(String lat, String lon){
+        WeatherService service = WeatherAppApi.getApi().create(WeatherService.class);
+
+        // get the city object with coordinates
+        Call<City> cityCall = service.getCityByCoordinates(lat,lon, WeatherAppApi.KEY,METRIC_UNIT, Locale.getDefault().getLanguage());
 
         cityCall.enqueue(new Callback<City>() {
             @Override
@@ -156,9 +177,15 @@ public class MainActivity extends AppCompatActivity {
                               // Logic to handle location object
                             Geocoder geocoder = new Geocoder(MainActivity.this, Locale.getDefault());
                             List<Address> addresses= geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
-                            String ciyName = addresses.get(0).getLocality();
-                            String countryCode = Locale.getDefault().getISO3Country();
-                            getCityFromService(ciyName+","+countryCode);
+                            if(addresses.get(0).getLocality() != null){
+                                String ciyName = addresses.get(0).getLocality();
+                                String countryCode = Locale.getDefault().getISO3Country();
+                                getCityFromService(ciyName+","+countryCode);
+                            }
+                            else{
+                                getCityFromService(String.valueOf(location.getLatitude()), String.valueOf(location.getLongitude()));
+                            }
+
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
